@@ -1123,7 +1123,8 @@ export class TranspiledModule {
   }
 
   async serialize(
-    optimizeForSize: boolean = true
+    optimizeForSize: boolean = true,
+    alwaysIncludeTranspiledSource: boolean = false
   ): Promise<SerializedTranspiledModule> {
     const sourceEqualsCompiled = Boolean(
       this.source && this.source.sourceEqualsCompiled
@@ -1157,7 +1158,7 @@ export class TranspiledModule {
     // Don't cache source if it didn't change, also don't cache changed source from npm
     // dependencies as we can compile those really quickly.
     const shouldCacheTranspiledSource = !canOptimizeSize && !isNpmDependency;
-    if (shouldCacheTranspiledSource) {
+    if (alwaysIncludeTranspiledSource || shouldCacheTranspiledSource) {
       // source can be null if module is not transpiled, i.e. included in other transpiled module (for example .scss files)
       serializableObject.source = this.source || null;
     }

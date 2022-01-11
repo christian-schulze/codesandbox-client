@@ -1306,7 +1306,12 @@ export default class Manager implements IEvaluator {
     {
       entryPath,
       optimizeForSize,
-    }: { entryPath?: string; optimizeForSize: boolean } = {
+      alwaysIncludeTranspiledSource,
+    }: {
+      entryPath?: string;
+      optimizeForSize: boolean;
+      alwaysIncludeTranspiledSource?: boolean;
+    } = {
       optimizeForSize: true,
     }
   ): Promise<ManagerCache> {
@@ -1325,7 +1330,8 @@ export default class Manager implements IEvaluator {
               ) {
                 // Only save modules that are not precomputed
                 serializedTModules[tModule.getId()] = await tModule.serialize(
-                  optimizeForSize
+                  optimizeForSize,
+                  alwaysIncludeTranspiledSource
                 );
               }
             }

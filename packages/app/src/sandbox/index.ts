@@ -11,6 +11,7 @@ import { getSandboxId } from '@codesandbox/common/lib/utils/url-generator';
 import { getPreviewSecret } from 'sandbox-hooks/preview-secret';
 import { show404 } from 'sandbox-hooks/not-found-screen';
 
+import injectTranspiledModules from './inject-transpiled-modules';
 import compile, { getCurrentManager } from './compile';
 
 const host = process.env.CODESANDBOX_HOST;
@@ -139,6 +140,15 @@ requirePolyfills().then(() => {
         compile(data);
       });
   }
+
+  let firstLoad = true;
+  window.addEventListener('message', async event => {
+    const { data } = event;
+    if (data.type === 'injectTranspiledModules') {
+      await injectTranspiledModules(data, firstLoad);
+      firstLoad = false;
+    }
+  });
 });
 
 /**

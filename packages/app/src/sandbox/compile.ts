@@ -202,7 +202,7 @@ const PREINSTALLED_DEPENDENCIES = [
   ...BABEL_DEPENDENCIES,
 ];
 
-function getDependencies(
+export function getDependencies(
   parsedPackage,
   templateDefinition,
   configurations
@@ -309,7 +309,7 @@ function getDependencies(
   return returnedDependencies;
 }
 
-async function initializeManager(
+export async function initializeManager(
   sandboxId: string,
   template: TemplateType,
   modules: { [path: string]: Module },
@@ -473,6 +473,7 @@ interface CompileOptions {
   disableDependencyPreprocessing?: boolean;
   clearConsoleDisabled?: boolean;
   reactDevTools?: 'legacy' | 'latest';
+  alwaysIncludeTranspiledSource?: boolean;
 }
 
 async function compile(opts: CompileOptions) {
@@ -493,6 +494,7 @@ async function compile(opts: CompileOptions) {
     disableDependencyPreprocessing = false,
     clearConsoleDisabled = false,
     reactDevTools,
+    alwaysIncludeTranspiledSource = true,
   } = opts;
 
   if (firstLoad) {
@@ -867,7 +869,10 @@ async function compile(opts: CompileOptions) {
 
     if (manager) {
       const managerState = {
-        ...(await manager.serialize({ optimizeForSize: false })),
+        ...(await manager.serialize({
+          optimizeForSize: false,
+          alwaysIncludeTranspiledSource,
+        })),
       };
       delete managerState.cachedPaths;
       managerState.entry = managerModuleToTranspile
